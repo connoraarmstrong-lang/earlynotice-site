@@ -243,9 +243,9 @@ footer p { margin-bottom: 0.4rem; }
 }
 
 /* admin dashboard */
-.admin-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 1rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+.admin-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: 1rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
 .admin-tiles li { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1rem 1.1rem; }
-.admin-tiles b { display: block; font: 700 1.9rem/1.15 var(--serif); }
+.admin-tiles b { display: block; font: 700 1.9rem/1.15 var(--serif); overflow-wrap: anywhere; }
 .admin-tiles span { color: var(--muted); font-size: 0.95rem; }
 .admin h2 { margin-top: 2.75rem; }
 .admin .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 0.5rem; background: var(--card); }
@@ -262,3 +262,9 @@ footer p { margin-bottom: 0.4rem; }
 .admin .tag.ok { border-color: var(--ink); font-weight: 700; }
 .admin details { margin-top: 1rem; }
 .admin summary { cursor: pointer; font-weight: 700; padding: 0.6rem 0; }
+.admin table.narrow { min-width: 0; }
+.admin table.narrow th.num, .admin table.narrow td.num { white-space: nowrap; }
+.admin-status { margin: 1.5rem 0 0; padding: 1rem 1.2rem; border: 2px solid var(--ink); border-radius: 0.5rem; background: var(--card); font-weight: 700; font-size: 1.1rem; line-height: 1.45; }
+.admin-notes { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.admin-notes li { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 0.9rem 1.1rem; line-height: 1.55; overflow-wrap: anywhere; }
+.admin-notes .tag { margin-right: 0.6rem; white-space: nowrap; }

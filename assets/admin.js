@@ -44,8 +44,22 @@
     });
     root.appendChild(list);
   }
-  function table(root, headers, rows, numeric) {
-    var wrap = el("div", "scroll"), t = el("table"), head = el("tr");
+  function cash(n) {
+    return (n < 0 ? "-$" : "$") + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  var LEVELS = { held: "held", look: "your call", note: "to know" };
+  function notes(root, items) {
+    var list = el("ul", "admin-notes");
+    items.forEach(function (item) {
+      var li = el("li");
+      li.appendChild(el("span", "tag" + (item.level === "held" ? " ok" : ""), LEVELS[item.level] || item.level));
+      li.appendChild(document.createTextNode(item.text));
+      list.appendChild(li);
+    });
+    root.appendChild(list);
+  }
+  function table(root, headers, rows, numeric, narrow) {
+    var wrap = el("div", "scroll"), t = el("table", narrow ? "narrow" : ""), head = el("tr");
     headers.forEach(function (h, i) { head.appendChild(el("th", numeric.indexOf(i) !== -1 ? "num" : "", h)); });
     t.appendChild(head);
     rows.forEach(function (row) {
@@ -63,15 +77,35 @@
   function render(d) {
     var root = $("admin-root"), t = d.totals, o = d.offer;
     root.replaceChildren();
-    $("admin-sub").textContent = "Built " + d.built + " from the files on your computer. It refreshes each time the site is built.";
+    var hours = d.built_at ? Math.floor((Date.now() - new Date(d.built_at).getTime()) / 3600000) : 0;
+    $("admin-sub").textContent = "A picture taken " + (d.built_at ? d.built_at.replace("T", " at ") : d.built) +
+      " from the files on your computer. It is not live: it refreshes each time the site is built and published." +
+      (hours >= 36 ? " This one is " + Math.floor(hours / 24) + " days old." : "");
 
+    if (d.gate) {
+      var held = d.gate.filter(function (g) { return g.stops && !g.passed; });
+      root.appendChild(el("p", "admin-status", held.length ?
+        "First emails are HELD by " + held.length + (held.length === 1 ? " rule" : " rules") + ". None can go until each one passes. The reasons are just below." :
+        "First emails are clear to go on the next weekday run."));
+    }
+
+    var m = d.money, r = d.replies;
     tiles(root, [
-      [t.may_email, "businesses we may email"], [t.emailed, "emailed so far"], [t.emailed_week, "emailed in the last 7 days"],
-      [t.waiting, "still waiting their turn"], [t.said_no, "said no thanks"], [t.trials, "on a free trial"],
+      [t.emailed, "businesses emailed so far"], [t.emailed_week, "emailed in the last 7 days"],
+      [r ? r.wrote_back : "-", "wrote back"], [t.said_no, "said no or unsubscribed"],
+      [t.bounced, "could not be delivered"], [t.trials, "on a free trial"],
       [t.paying, "paying"], [t.monthly_revenue, "a month from subscriptions"],
-      [t.set_aside, "to keep aside: yearly money not yet earned"], [t.lists, "lists (trade and city)"],
-      [t.cities, "cities with fresh data"], [t.records, "fit-outs in the last 30 days"]
+      [m ? cash(m.left_now) : "-", "a month left after today's costs"],
+      [t.set_aside, "to keep aside: yearly money not yet earned"], [t.lists_sent, "Monday lists sent to subscribers"],
+      [t.may_email, "businesses we may email"], [t.waiting, "still waiting their turn"],
+      [t.lists, "lists (trade and city)"], [t.cities, "cities with records"], [t.records, "fit-outs in the last 30 days"]
     ]);
+
+    if (d.attention) {
+      section(root, "Needs your attention", "Checked when this page was built. \"Held\" stops first emails. \"Your call\" is a decision or a check that is yours. \"To know\" needs nothing from you.");
+      if (d.attention.length) notes(root, d.attention);
+      else root.appendChild(el("p", "", "Nothing needs you."));
+    }
 
     if (d.inbox) {
       section(root, "Waiting for you", "Messages a person has to answer. A business that says no is marked by itself and is not listed here.");
@@ -85,6 +119,35 @@
         return [h.when, h.business, h.what];
       }), []);
       else root.appendChild(el("p", "", "Nothing yet."));
+    }
+
+    if (r) {
+      section(root, "Who wrote back", "Counted from your main mailbox, since it was first read by the program. Mail from services and from yourself is left out.");
+      table(root, ["", "So far"], [
+        ["Messages from businesses, in all", r.wrote_back], ["Said no (marked, never emailed again)", r.said_no],
+        ["Want to start", r.want_to_start], ["Want to cancel", r.want_to_cancel], ["Wrote something else", r.other],
+        ["Of those, answered by you", r.answered], ["Automatic replies (away notes, ticket numbers)", r.auto]
+      ], [1], true);
+    }
+
+    if (m) {
+      section(root, "Money, each month", "The services bill in US dollars. They are shown in Canadian dollars at " + m.rate.rate +
+        " (" + m.rate.source + ", " + m.rate.day + "), which assumes your own prices are charged in Canadian dollars. " +
+        "Income is what is recorded here when a customer pays, not a reading of your Stripe account.");
+      table(root, ["", "A month"], [
+        ["Coming in from subscriptions (a yearly payment counts as a twelfth each month)", cash(m.income)],
+        ["Stripe keeps", cash(-m.stripe)],
+        ["Running costs charged today (US" + cash(m.costs_now_usd) + ")", cash(-m.costs_now_cad)],
+        ["Left over today", cash(m.left_now)],
+        ["Running costs if every free trial is kept on (US" + cash(m.costs_usd) + ")", cash(-m.costs_cad)],
+        ["Left over then", cash(m.left)]
+      ], [1], true);
+      if (m.customers_to_cover) root.appendChild(el("p", "", m.customers_to_cover + " paying " +
+        (m.customers_to_cover === 1 ? "customer covers" : "customers cover") + " the full running costs. You keep " +
+        cash(m.kept_of_one) + " of each " + o.price + " monthly payment after Stripe's share."));
+      table(root, ["What it is", "US$ a month", "State", "Where the figure comes from"], m.lines.map(function (line) {
+        return [line.what, line.usd.toFixed(2), line.state + (line.decide_by ? ", decide by " + line.decide_by : ""), line.seen];
+      }), [1]);
     }
 
     section(root, "The offer", null);
@@ -162,9 +225,26 @@
       root.appendChild(box);
     });
 
+    if (d.gate) {
+      section(root, "The rules a first email must pass", "Every rule, checked when this page was built. One that reads STOP holds every first email until it passes.");
+      table(root, ["Rule", "Result", "What was found"], d.gate.map(function (g) {
+        return [g.rule, { tag: g.passed ? "passes" : (g.stops ? "STOP" : "care"), ok: !g.passed && g.stops }, g.detail];
+      }), []);
+    }
+
+    if (d.open_items) {
+      section(root, "Open items", "Everything in the review log that is not closed. \"Must act\" holds first emails. \"Watch\" needs nothing unless it changes.");
+      if (d.open_items.length) table(root, ["#", "Kind", "What", "Where it stands"], d.open_items.map(function (i) {
+        return [i.n, i.kind, i.what, i.state];
+      }), []);
+      else root.appendChild(el("p", "", "Nothing is open."));
+    }
+
     section(root, "What is not measured", null);
     root.appendChild(el("p", "", "Opens and clicks. The website keeps no record of visitors, so there is no way to see who opened an email or a map link. " +
       "Replies are the signal: a business that says yes or no is marked by hand and shows in the table above."));
+    root.appendChild(el("p", "", "How warm each sending mailbox is. That is on the warm-up service's own dashboard, which the program cannot read. " +
+      "Your Stripe balance is not read either: a payment shows here once it is recorded on this computer."));
   }
   async function start() {
     try { render(await load()); }
