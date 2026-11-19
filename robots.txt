@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 Disallow: /m/
+Disallow: /admin/
 Sitemap: https://earlynotice.ca/sitemap.xml

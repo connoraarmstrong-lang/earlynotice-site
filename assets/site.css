@@ -161,3 +161,24 @@ footer p { margin-bottom: 0.4rem; }
   #map { height: 26rem; }
   .map-side { max-height: none; }
 }
+
+/* admin dashboard */
+.admin-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 1rem; margin: 1.5rem 0 0; padding: 0; list-style: none; }
+.admin-tiles li { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1rem 1.1rem; }
+.admin-tiles b { display: block; font: 700 1.9rem/1.15 var(--serif); }
+.admin-tiles span { color: var(--muted); font-size: 0.95rem; }
+.admin h2 { margin-top: 2.75rem; }
+.admin .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 0.5rem; background: var(--card); }
+.admin table { border-collapse: collapse; width: 100%; min-width: 44rem; }
+.admin th, .admin td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.admin th { font-size: 0.9rem; color: var(--muted); font-weight: 700; }
+.admin td.num, .admin th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.admin tr:last-child td { border-bottom: 0; }
+.admin .bars { display: flex; align-items: flex-end; gap: 0.4rem; height: 9rem; padding: 1rem; border: 1px solid var(--rule); border-radius: 0.5rem; background: var(--card); }
+.admin .bars div { flex: 1; min-width: 1rem; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 0.3rem; height: 100%; font: 0.75rem/1 var(--mono); color: var(--muted); }
+.admin .bars i { display: block; width: 100%; background: var(--accent); border-radius: 0.2rem 0.2rem 0 0; min-height: 2px; }
+.admin pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1.1rem 1.25rem; font: 0.92rem/1.55 var(--mono); }
+.admin .tag { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 999px; border: 1px solid var(--rule); font-size: 0.85rem; }
+.admin .tag.ok { border-color: var(--ink); font-weight: 700; }
+.admin details { margin-top: 1rem; }
+.admin summary { cursor: pointer; font-weight: 700; padding: 0.6rem 0; }
