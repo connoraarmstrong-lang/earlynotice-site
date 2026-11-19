@@ -1,6 +1,8 @@
 {
   "name": "earlynotice",
   "compatibility_date": "2026-11-19",
+  "workers_dev": false,
+  "preview_urls": false,
   "assets": {
     "directory": "./",
     "not_found_handling": "404-page",
