@@ -226,9 +226,13 @@
       setText("map-kicker", "Preview" + (name ? " for " + name : ""));
       setText("map-title", shop ? "Business fit-outs around " + name : "Business fit-outs in " + data.city);
       var rings = data.rings_km || [], far = rings[rings.length - 1];
-      var close = shop && far ? points.filter(function (p) { return p.km <= far; }).length : 0;
-      setText("map-sub", data.total + " business fit-outs were approved in " + data.city + " in the last 30 days" +
-        (close ? ", " + close + " of them within " + far + " km of you" : "") + ". " +
+      // The same two numbers their email states: fit-outs of the kinds they sell to, and how many are near.
+      var mine = (data.audience && data.audience.focus) || [];
+      var ofMine = function (p) { return mine.indexOf(p.tag) !== -1; };
+      var close = shop && far ? points.filter(function (p) { return ofMine(p) && p.km <= far; }).length : 0;
+      var count = data.focus_total !== undefined ? data.focus_total : points.filter(ofMine).length;
+      setText("map-sub", count + " fit-outs of the kinds " + (data.audience ? data.audience.label : "you") + " sell to were approved in " +
+        data.city + " in the last 30 days" + (close ? ", " + close + " of them within " + far + " km of you" : "") + ". " +
         "This preview shows " + data.records.length + " in full. The rest are rings placed near the real spot.");
       document.title = (name ? name + ": " : "") + data.city + " fit-outs preview | Early Notice";
       var offer = $("map-offer");
