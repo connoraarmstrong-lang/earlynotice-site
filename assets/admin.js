@@ -78,6 +78,18 @@
       " free weeks, no card. " + (o.seats ? "At most " + o.seats + " businesses per trade in each city. " : "No limit on how many businesses of one trade may subscribe. ") +
       "Sending limit: " + o.daily_cap +
       " first emails a day per city, " + o.overall_cap + " a day in all, weekdays only, one email per business ever."));
+    if (o.links && o.links.length) {
+      var pay = el("p", "", "Where customers pay: ");
+      o.links.forEach(function (pair, i) {
+        if (i) pay.appendChild(document.createTextNode("  ·  "));
+        var a = el("a", "", pair[0]);
+        a.href = pair[1];
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        pay.appendChild(a);
+      });
+      root.appendChild(pay);
+    }
 
     section(root, "Lists", "One row per trade and city. A list is only emailed once its wording is approved.");
     table(root, ["City", "Trade", "Wording", "Found", "May email", "With a pin", "Emailed", "Waiting", "Said no", "Trial", "Paying", "Places left"],
