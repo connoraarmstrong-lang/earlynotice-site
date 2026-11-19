@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your map | Early Notice</title>
+<meta name="description" content="A private Early Notice map.">
+<link rel="canonical" href="https://earlynotice.ca/m/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Early Notice">
+<meta property="og:title" content="Your map | Early Notice">
+<meta property="og:description" content="A private Early Notice map.">
+<meta property="og:url" content="https://earlynotice.ca/m/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="20" height="24" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M9 13h10M9 18h10M9 23h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="25" cy="7" r="5" fill="#b93d0b"/></svg><span>Early Notice</span></a>
+    <nav aria-label="Main">
+      <a href="/map/">Map</a>
+      <a href="/cities/">Cities</a>
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/faq/">Questions</a>
+      <a class="btn" href="mailto:connor@earlynotice.ca?subject=Start%20my%204%20free%20weeks&amp;body=City%20I%20want%3A%0AMy%20business%3A%0A">Start free</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="hero">
+  <div class="wrap">
+    <p class="kicker" id="map-kicker">Your map</p>
+    <h1 id="map-title">Your Early Notice map</h1>
+    <p class="lede" id="map-sub">Opening your map.</p>
+    <div id="map-status" class="callout" role="status" hidden></div>
+    <div class="map-layout">
+      <div id="map" data-mode="member" aria-label="Map of business fit-outs"></div>
+      <div class="map-side">
+        <p class="map-summary" id="map-summary"></p>
+        <div class="map-filters" id="map-filters" role="group" aria-label="Business types"></div>
+        <ol class="map-list" id="map-list"></ol>
+        <p class="map-locked" id="map-locked" hidden></p>
+      </div>
+    </div>
+    <div class="map-offer" id="map-offer" hidden></div>
+    <p class="muted small" id="map-pin-note" style="margin-top:1.5rem" hidden>Is the pin not quite on your building?
+    Write to <a href="mailto:connor@earlynotice.ca">connor@earlynotice.ca</a> and we will move it.</p>
+    <p class="muted small" style="margin-top:1.5rem">This link is private to you. Anyone you send it to can see your map.</p>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <nav aria-label="Footer">
+      <a href="/map/">Map preview</a>
+      <a href="/cities/">Cities</a>
+      <a href="/for/sign-shops/">For sign shops</a>
+      <a href="/faq/">Questions</a>
+      <a href="/sources/">Sources and licences</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/remove/">Remove a listing</a>
+    </nav>
+    <p>Early Notice &middot; Calgary, Alberta &middot; <a href="mailto:connor@earlynotice.ca">connor@earlynotice.ca</a></p>
+    <p>Early Notice is an independent business. It is not affiliated with or endorsed by any city.</p>
+    <p>Figures and samples built November 18, 2026 from city open data.</p>
+  </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+<script src="/assets/map.js" defer></script>
+</body>
+</html>
