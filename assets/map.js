@@ -11,6 +11,9 @@
   var ORDER = ["retail", "food", "medical", "personal", "hotel", "office", "other"];
 
   var liveMap = null, touchMoves = false;
+  // The open list of business types closes when a click lands anywhere else on the page.
+  var closeTypes = null;
+  document.addEventListener("click", function (event) { if (closeTypes) closeTypes(event); });
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -509,36 +512,70 @@
       });
       summary.appendChild(sorts);
 
+      // ---- the business types: one line when closed, a tick list when open
       var filters = $("map-filters");
       filters.replaceChildren();
-      present.forEach(function (tag) {
-        var n = points.filter(function (p) { return p.tag === tag; }).length;
-        var chip = el("button", "chip");
-        chip.type = "button";
-        chip.setAttribute("aria-pressed", String(state.active.indexOf(tag) !== -1));
+      var picked = present.filter(function (tag) { return state.active.indexOf(tag) !== -1; });
+      var mine = present.filter(function (tag) { return focus.indexOf(tag) !== -1; });
+      var box = el("details", "types"), head = el("summary"), dots = el("span", "dots");
+      box.open = !!state.typesOpen;
+      picked.forEach(function (tag) {
         var dot = el("span", "dot");
         dot.style.background = COLORS[tag];
-        chip.appendChild(dot);
-        chip.appendChild(document.createTextNode(LABELS[tag] + " " + n));
-        chip.onclick = function () {
+        dots.appendChild(dot);
+      });
+      head.appendChild(dots);
+      head.appendChild(el("span", "title",
+        !picked.length ? "No types selected" :
+        present.length === 1 ? LABELS[present[0]] :
+        picked.length === present.length ? "All " + present.length + " types" :
+        picked.length <= 2 ? picked.map(function (tag) { return LABELS[tag]; }).join(", ") :
+        picked.length + " of " + present.length + " types"));
+      head.appendChild(el("span", "arrow"));
+      box.appendChild(head);
+      var menu = el("div", "types-list");
+      present.forEach(function (tag) {
+        var row = el("label", "type-row"), tick = el("input"), dot = el("span", "dot");
+        tick.type = "checkbox";
+        tick.checked = state.active.indexOf(tag) !== -1;
+        tick.setAttribute("data-tag", tag);
+        tick.onchange = function () {
           var at = state.active.indexOf(tag);
           if (at === -1) state.active.push(tag); else state.active.splice(at, 1);
+          state.focusOn = tag;     // the list is drawn again; the keyboard stays on this tick box
           draw(true);
         };
-        filters.appendChild(chip);
+        dot.style.background = COLORS[tag];
+        row.appendChild(tick);
+        row.appendChild(dot);
+        row.appendChild(el("span", "name", LABELS[tag]));
+        row.appendChild(el("span", "n", String(points.filter(function (p) { return p.tag === tag; }).length)));
+        menu.appendChild(row);
       });
-      var mine = present.filter(function (tag) { return focus.indexOf(tag) !== -1; });
-      if (present.length > 1) {
-        var showingAll = state.active.length === present.length;
-        if (!showingAll || (mine.length && mine.length < present.length)) {
-          var all = el("button", "chip", showingAll ? "Show my types only" : "Show all types");
-          all.type = "button";
-          all.onclick = function () {
-            state.active = showingAll ? mine.slice() : present.slice();
-            draw(true);
-          };
-          filters.appendChild(all);
-        }
+      var actions = el("div", "types-actions");
+      var shortcut = function (text, tags) {
+        var button = el("button", "sort", text);
+        button.type = "button";
+        button.onclick = function () { state.active = tags.slice(); draw(true); };
+        actions.appendChild(button);
+      };
+      if (present.length > 1 && picked.length < present.length) shortcut("Select all", present);
+      if (mine.length && mine.length < present.length && picked.join() !== mine.join()) shortcut("My types only", mine);
+      if (actions.firstChild) menu.appendChild(actions);
+      box.appendChild(menu);
+      box.addEventListener("toggle", function () { state.typesOpen = box.open; });
+      box.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && box.open) { box.open = false; state.typesOpen = false; head.focus(); }
+      });
+      filters.appendChild(box);
+      closeTypes = function (event) {
+        // A click on something this list has just redrawn is still a click inside it.
+        if (box.open && document.contains(event.target) && !box.contains(event.target)) { box.open = false; state.typesOpen = false; }
+      };
+      if (state.focusOn) {
+        var again = box.querySelector('input[data-tag="' + state.focusOn + '"]');
+        if (again) again.focus();
+        state.focusOn = null;
       }
 
       var list = $("map-list");
