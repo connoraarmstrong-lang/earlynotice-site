@@ -75,14 +75,15 @@
 
     section(root, "The offer", null);
     root.appendChild(el("p", "", o.price + " a month per city" + (o.yearly ? ", or " + o.yearly + " a year" : "") + ". " + o.weeks +
-      " free weeks, no card. At most " + o.seats + " businesses per trade in each city. Sending limit: " + o.daily_cap +
+      " free weeks, no card. " + (o.seats ? "At most " + o.seats + " businesses per trade in each city. " : "No limit on how many businesses of one trade may subscribe. ") +
+      "Sending limit: " + o.daily_cap +
       " first emails a day per city, " + o.overall_cap + " a day in all, weekdays only, one email per business ever."));
 
     section(root, "Lists", "One row per trade and city. A list is only emailed once its wording is approved.");
     table(root, ["City", "Trade", "Wording", "Found", "May email", "With a pin", "Emailed", "Waiting", "Said no", "Trial", "Paying", "Places left"],
       d.lists.map(function (l) {
         return [l.city, l.trade, { tag: l.approved ? "approved" : "not approved", ok: l.approved }, l.found, l.may_email, l.pinned,
-                l.emailed, l.waiting, l.said_no, l.trial, l.paid, l.places_left];
+                l.emailed, l.waiting, l.said_no, l.trial, l.paid, l.places_left === null ? "no limit" : l.places_left];
       }), [3, 4, 5, 6, 7, 8, 9, 10, 11]);
 
     section(root, "Next to be emailed", "Who the next weekday run would write to, the trades taking turns in each city.");
