@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map preview: business fit-outs in Halifax | Early Notice</title>
+<meta name="description" content="A preview of the private map each Early Notice subscriber gets, showing business fit-outs near them.">
+<link rel="canonical" href="https://earlynotice.ca/map/halifax/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Early Notice">
+<meta property="og:title" content="Map preview: business fit-outs in Halifax | Early Notice">
+<meta property="og:description" content="A preview of the private map each Early Notice subscriber gets, showing business fit-outs near them.">
+<meta property="og:url" content="https://earlynotice.ca/map/halifax/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body class="app">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="20" height="24" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M9 13h10M9 18h10M9 23h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="25" cy="7" r="5" fill="#b93d0b"/></svg><span>Early Notice</span></a>
+    <nav aria-label="Main">
+      <a href="/map/">Map</a>
+      <a href="/cities/">Cities</a>
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/faq/">Questions</a>
+      <a class="btn" href="mailto:connor@earlynotice.ca?subject=Start%20my%202%20free%20weeks&amp;body=City%20I%20want%3A%0AMy%20business%3A%0A">Start free</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="hero map-hero">
+  <div class="wrap">
+    <nav class="map-cities" aria-label="Choose a city"><p class="kicker">Map preview &middot; <a href="/cities/">14 cities</a></p><label for="map-city">City</label><select id="map-city" autocomplete="off"><option value="/map/calgary/">Calgary</option><option value="/map/edmonton/">Edmonton</option><option value="/map/grande-prairie/">Grande Prairie</option><option value="/map/halifax/" selected>Halifax</option><option value="/map/kingston/">Kingston</option><option value="/map/kitchener/">Kitchener</option><option value="/map/oakville/">Oakville</option><option value="/map/squamish/">Squamish</option><option value="/map/strathcona-county/">Strathcona County</option><option value="/map/toronto/">Toronto</option><option value="/map/vancouver/">Vancouver</option><option value="/map/victoria/">Victoria</option><option value="/map/waterloo/">Waterloo</option><option value="/map/winnipeg/">Winnipeg</option></select></nav>
+    <h1>See every fit-out around your business.</h1>
+    <div class="map-app has-form">
+    <form class="map-form" id="map-form">
+      <div class="field"><label for="map-trade">What do you sell?</label>
+        <select id="map-trade"><option value="">Any kind of business</option><option value="sign-shops">Sign shops</option><option value="commercial-cleaners">Commercial cleaners</option><option value="office-furniture">Office furniture dealers</option><option value="cabling-it">Cabling and IT companies</option><option value="security">Security and alarm companies</option><option value="kitchen-equipment">Kitchen equipment suppliers</option></select></div>
+      
+    </form>
+    <p class="muted small map-form-note" style="margin-top:0.9rem">Click the map where your business is to see what is around you.</p>
+    <p class="map-form-result" id="map-form-result" role="status" hidden></p>
+    <div id="map-status" class="callout" role="status" hidden></div>
+    <ul class="map-stats" id="map-stats" aria-label="The numbers that matter"></ul>
+    <div class="map-layout">
+      <div class="map-stage">
+        <div id="map" data-mode="preview" aria-label="Map of business fit-outs"></div>
+        <p class="map-hint muted small" id="map-hint" hidden>Tap the map to move it. Pinch to zoom.</p>
+        <p class="map-legend muted small" id="map-legend"></p>
+      </div>
+      <div class="map-side">
+        <p class="map-summary" id="map-summary"></p>
+        <div class="map-filters" id="map-filters" role="group" aria-label="Business types"></div>
+        <ol class="map-list" id="map-list"></ol>
+        <p class="map-locked" id="map-locked" hidden></p>
+      </div>
+    </div>
+    </div>
+    <p class="lede map-about">Subscribers get their own private map. It knows where your business is and what you sell,
+    so it opens on the fit-outs that matter to you, nearest first, and it is updated every weekday. This preview shows 6 Halifax records in full
+    and the rest as rings placed near the real spot.</p>
+    <div class="actions map-cta"><a class="btn" href="mailto:connor@earlynotice.ca?subject=Start%20my%202%20free%20weeks%20%28Halifax%29&amp;body=City%20I%20want%3A%20Halifax%0AMy%20business%3A%0A">Get my own map free for 2 weeks</a></div>
+    <p class="muted small" style="margin-top:1.5rem">Maps are ready for Calgary, Edmonton, Grande Prairie, Halifax, Kingston, Kitchener, Oakville, Squamish, Strathcona County, Toronto, Vancouver, Victoria, Waterloo and Winnipeg, where the city publishes each permit's location. The Monday list covers <a href="/cities/">all 17 cities</a>.</p>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <nav aria-label="Footer">
+      <a href="/map/">Map preview</a>
+      <a href="/cities/">Cities</a>
+      <a href="/for/sign-shops/">For sign shops</a>
+      <a href="/faq/">Questions</a>
+      <a href="/sources/">Sources and licences</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/remove/">Remove a listing</a>
+    </nav>
+    <p>Early Notice &middot; Calgary, Alberta &middot; <a href="mailto:connor@earlynotice.ca">connor@earlynotice.ca</a></p>
+    <p>Early Notice is an independent business. It is not affiliated with or endorsed by any city.</p>
+    <p>Figures and samples built November 19, 2026 from city open data.</p>
+  </div>
+</footer>
+<script type="application/json" id="map-data">{"mode":"preview","city":"Halifax","province":"NS","built":"2026-11-19","audience":{"key":"all","label":"your business","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"name":"","shop":null,"rings_km":[2,5],"total":20,"focus_total":0,"offer":{"weeks":"2","email":"connor@earlynotice.ca"},"records":[{"lat":44.65104,"lon":-63.57723,"address":"2000 Barrington St","area":"Halifax","what":"Business (type not published)","tag":"other","date":"2026-11-10","cost":"$250,000","note":"Renovation · Commercial","value":250000,"new":false},{"lat":44.67274,"lon":-63.58335,"address":"51 Jamieson St","area":"Dartmouth","what":"Business (type not published)","tag":"other","date":"2026-11-10","cost":"$36,000","note":"Renovation · Commercial","value":36000,"new":false},{"lat":44.65216,"lon":-63.64124,"address":"110 Frederick Ave","area":"Halifax","what":"Business (type not published)","tag":"other","date":"2026-11-09","cost":"$17,000","note":"Renovation · Commercial","value":17000,"new":false},{"lat":44.72015,"lon":-63.55893,"address":"371 Cutler Ave","area":"Dartmouth","what":"Business (type not published)","tag":"other","date":"2026-11-06","cost":"$156,000","note":"Renovation · Commercial","value":156000,"new":false},{"lat":44.64304,"lon":-63.57649,"address":"5486 Spring Garden Rd","area":"Halifax","what":"Business (type not published)","tag":"other","date":"2026-11-05","cost":"$689,000","note":"Renovation · Commercial","value":689000,"new":false},{"lat":44.60097,"lon":-63.60871,"address":"531 Herring Cove Rd","area":"Halifax","what":"Business (type not published)","tag":"other","date":"2026-11-05","cost":"$50,000","note":"Renovation · Commercial","value":50000,"new":false}],"hidden":[{"lat":44.6662,"lon":-63.5644,"tag":"other","value":780000,"new":false},{"lat":44.7168,"lon":-63.6793,"tag":"other","value":400000,"new":false},{"lat":44.7811,"lon":-63.7078,"tag":"other","value":25000,"new":false},{"lat":44.6447,"lon":-63.578,"tag":"other","value":25000,"new":false},{"lat":44.6876,"lon":-63.5558,"tag":"other","value":300000,"new":false},{"lat":44.6505,"lon":-63.6144,"tag":"other","value":200000,"new":false},{"lat":44.7081,"lon":-63.6614,"tag":"other","value":30000,"new":false},{"lat":44.6524,"lon":-63.6787,"tag":"other","value":750000,"new":false},{"lat":44.6536,"lon":-63.5945,"tag":"other","value":240000,"new":false},{"lat":44.6456,"lon":-63.5983,"tag":"other","value":200000,"new":false},{"lat":44.6505,"lon":-63.6144,"tag":"other","value":85000,"new":false},{"lat":44.697,"lon":-63.5481,"tag":"other","value":14000,"new":false},{"lat":44.6478,"lon":-63.5726,"tag":"other","value":100000,"new":false},{"lat":44.6974,"lon":-63.5836,"tag":"other","value":660000,"new":false}],"audiences":{"sign-shops":{"key":"sign-shops","label":"sign shops","focus":["retail","food","personal","medical","hotel"],"things":"storefront fit-outs"},"commercial-cleaners":{"key":"commercial-cleaners","label":"commercial cleaners","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"office-furniture":{"key":"office-furniture","label":"office furniture dealers","focus":["office","medical"],"things":"office and clinic fit-outs"},"cabling-it":{"key":"cabling-it","label":"cabling and IT companies","focus":["office","medical","retail"],"things":"office, clinic and shop fit-outs"},"security":{"key":"security","label":"security and alarm companies","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"kitchen-equipment":{"key":"kitchen-equipment","label":"kitchen equipment suppliers","focus":["food"],"things":"restaurant and food fit-outs"}},"lookup":null,"lookup_source":"the City of Halifax's own address records"}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+<script src="/assets/map.js" defer></script>
+</body>
+</html>

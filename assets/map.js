@@ -622,9 +622,21 @@
     draw(true);
   }
 
+  // The list of cities: choosing one opens that city's map.
+  function setUpCities() {
+    var pick = $("map-city");
+    if (!pick) return;
+    pick.onchange = function () { if (pick.value) window.location.href = pick.value; };
+    // Coming back with the browser's Back button, the list shows this page's own city again.
+    window.addEventListener("pageshow", function () {
+      for (var i = 0; i < pick.options.length; i++) if (pick.options[i].defaultSelected) pick.selectedIndex = i;
+    });
+  }
+
   async function start() {
     var holder = $("map");
     if (!holder) return;
+    setUpCities();
     try {
       if (holder.getAttribute("data-mode") === "member") render(await loadPrivate());
       else { var preview = loadPreview(); render(preview); setUpForm(preview); }

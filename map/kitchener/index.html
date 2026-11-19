@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Map preview: business fit-outs in Kitchener | Early Notice</title>
+<meta name="description" content="A preview of the private map each Early Notice subscriber gets, showing business fit-outs near them.">
+<link rel="canonical" href="https://earlynotice.ca/map/kitchener/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Early Notice">
+<meta property="og:title" content="Map preview: business fit-outs in Kitchener | Early Notice">
+<meta property="og:description" content="A preview of the private map each Early Notice subscriber gets, showing business fit-outs near them.">
+<meta property="og:url" content="https://earlynotice.ca/map/kitchener/">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body class="app">
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="5" width="20" height="24" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M9 13h10M9 18h10M9 23h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><circle cx="25" cy="7" r="5" fill="#b93d0b"/></svg><span>Early Notice</span></a>
+    <nav aria-label="Main">
+      <a href="/map/">Map</a>
+      <a href="/cities/">Cities</a>
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/faq/">Questions</a>
+      <a class="btn" href="mailto:connor@earlynotice.ca?subject=Start%20my%202%20free%20weeks&amp;body=City%20I%20want%3A%0AMy%20business%3A%0A">Start free</a>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<section class="hero map-hero">
+  <div class="wrap">
+    <nav class="map-cities" aria-label="Choose a city"><p class="kicker">Map preview &middot; <a href="/cities/">14 cities</a></p><label for="map-city">City</label><select id="map-city" autocomplete="off"><option value="/map/calgary/">Calgary</option><option value="/map/edmonton/">Edmonton</option><option value="/map/grande-prairie/">Grande Prairie</option><option value="/map/halifax/">Halifax</option><option value="/map/kingston/">Kingston</option><option value="/map/kitchener/" selected>Kitchener</option><option value="/map/oakville/">Oakville</option><option value="/map/squamish/">Squamish</option><option value="/map/strathcona-county/">Strathcona County</option><option value="/map/toronto/">Toronto</option><option value="/map/vancouver/">Vancouver</option><option value="/map/victoria/">Victoria</option><option value="/map/waterloo/">Waterloo</option><option value="/map/winnipeg/">Winnipeg</option></select></nav>
+    <h1>See every fit-out around your business.</h1>
+    <div class="map-app has-form">
+    <form class="map-form" id="map-form">
+      <div class="field"><label for="map-trade">What do you sell?</label>
+        <select id="map-trade"><option value="">Any kind of business</option><option value="sign-shops">Sign shops</option><option value="commercial-cleaners">Commercial cleaners</option><option value="office-furniture">Office furniture dealers</option><option value="cabling-it">Cabling and IT companies</option><option value="security">Security and alarm companies</option><option value="kitchen-equipment">Kitchen equipment suppliers</option></select></div>
+      
+    </form>
+    <p class="muted small map-form-note" style="margin-top:0.9rem">Click the map where your business is to see what is around you.</p>
+    <p class="map-form-result" id="map-form-result" role="status" hidden></p>
+    <div id="map-status" class="callout" role="status" hidden></div>
+    <ul class="map-stats" id="map-stats" aria-label="The numbers that matter"></ul>
+    <div class="map-layout">
+      <div class="map-stage">
+        <div id="map" data-mode="preview" aria-label="Map of business fit-outs"></div>
+        <p class="map-hint muted small" id="map-hint" hidden>Tap the map to move it. Pinch to zoom.</p>
+        <p class="map-legend muted small" id="map-legend"></p>
+      </div>
+      <div class="map-side">
+        <p class="map-summary" id="map-summary"></p>
+        <div class="map-filters" id="map-filters" role="group" aria-label="Business types"></div>
+        <ol class="map-list" id="map-list"></ol>
+        <p class="map-locked" id="map-locked" hidden></p>
+      </div>
+    </div>
+    </div>
+    <p class="lede map-about">Subscribers get their own private map. It knows where your business is and what you sell,
+    so it opens on the fit-outs that matter to you, nearest first, and it is updated every weekday. This preview shows 6 Kitchener records in full
+    and the rest as rings placed near the real spot.</p>
+    <div class="actions map-cta"><a class="btn" href="mailto:connor@earlynotice.ca?subject=Start%20my%202%20free%20weeks%20%28Kitchener%29&amp;body=City%20I%20want%3A%20Kitchener%0AMy%20business%3A%0A">Get my own map free for 2 weeks</a></div>
+    <p class="muted small" style="margin-top:1.5rem">Maps are ready for Calgary, Edmonton, Grande Prairie, Halifax, Kingston, Kitchener, Oakville, Squamish, Strathcona County, Toronto, Vancouver, Victoria, Waterloo and Winnipeg, where the city publishes each permit's location. The Monday list covers <a href="/cities/">all 17 cities</a>.</p>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <nav aria-label="Footer">
+      <a href="/map/">Map preview</a>
+      <a href="/cities/">Cities</a>
+      <a href="/for/sign-shops/">For sign shops</a>
+      <a href="/faq/">Questions</a>
+      <a href="/sources/">Sources and licences</a>
+      <a href="/terms/">Terms</a>
+      <a href="/privacy/">Privacy</a>
+      <a href="/remove/">Remove a listing</a>
+    </nav>
+    <p>Early Notice &middot; Calgary, Alberta &middot; <a href="mailto:connor@earlynotice.ca">connor@earlynotice.ca</a></p>
+    <p>Early Notice is an independent business. It is not affiliated with or endorsed by any city.</p>
+    <p>Figures and samples built November 19, 2026 from city open data.</p>
+  </div>
+</footer>
+<script type="application/json" id="map-data">{"mode":"preview","city":"Kitchener","province":"ON","built":"2026-11-19","audience":{"key":"all","label":"your business","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"name":"","shop":null,"rings_km":[2,5],"total":7,"focus_total":7,"offer":{"weeks":"2","email":"connor@earlynotice.ca"},"records":[{"lat":43.42552,"lon":-80.54487,"address":"540 Westforest Trail","area":"","what":"Retail","tag":"retail","date":"2026-10-29","cost":"$20,000","note":"Industrial/Commercial/Institutional Building Permit · Retail Complex (Plaza, Mall, Shopping Center) · Alterations / Improvement...","value":20000,"new":false},{"lat":43.43527,"lon":-80.49483,"address":"116 St Clair Ave","area":"","what":"Retail","tag":"retail","date":"2026-10-28","cost":"$25,000","note":"Industrial/Commercial/Institutional Building Permit · Retail Complex (Plaza, Mall, Shopping Center) · Alterations / Improvement...","value":25000,"new":false},{"lat":43.41412,"lon":-80.46342,"address":"951 Homer Watson Blvd","area":"","what":"Restaurant or food","tag":"food","date":"2026-10-26","cost":"$50,000","note":"Industrial/Commercial/Institutional Building Permit · Restaurant / Bar / Nightclub · Alterations / Improvements to Building","value":50000,"new":false},{"lat":43.40765,"lon":-80.3976,"address":"4341 King St E","area":"","what":"Medical or dental","tag":"medical","date":"2026-10-26","cost":"$100,000","note":"Industrial/Commercial/Institutional Building Permit · Medical Clinic · Alterations / Improvements to Building","value":100000,"new":false},{"lat":43.45129,"lon":-80.49109,"address":"120 King St W","area":"","what":"Fitness or personal care","tag":"personal","date":"2026-10-26","cost":"$150,000","note":"Industrial/Commercial/Institutional Building Permit · Retail or Wholesale Outlet / Department Store / Personal Services / Dry C...","value":150000,"new":false},{"lat":43.45182,"lon":-80.44429,"address":"1020 Ottawa St N Unit A","area":"","what":"Retail","tag":"retail","date":"2026-10-22","cost":"$42,000","note":"Industrial/Commercial/Institutional Building Permit · Retail Complex (Plaza, Mall, Shopping Center) · Alterations / Improvement...","value":42000,"new":false}],"hidden":[{"lat":43.4182,"lon":-80.4474,"tag":"retail","value":180000,"new":false}],"audiences":{"sign-shops":{"key":"sign-shops","label":"sign shops","focus":["retail","food","personal","medical","hotel"],"things":"storefront fit-outs"},"commercial-cleaners":{"key":"commercial-cleaners","label":"commercial cleaners","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"office-furniture":{"key":"office-furniture","label":"office furniture dealers","focus":["office","medical"],"things":"office and clinic fit-outs"},"cabling-it":{"key":"cabling-it","label":"cabling and IT companies","focus":["office","medical","retail"],"things":"office, clinic and shop fit-outs"},"security":{"key":"security","label":"security and alarm companies","focus":["retail","food","medical","personal","hotel","office","other"],"things":"business fit-outs"},"kitchen-equipment":{"key":"kitchen-equipment","label":"kitchen equipment suppliers","focus":["food"],"things":"restaurant and food fit-outs"}},"lookup":null,"lookup_source":"the City of Kitchener's own address records"}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+<script src="/assets/map.js" defer></script>
+</body>
+</html>
