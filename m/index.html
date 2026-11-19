@@ -16,7 +16,7 @@
 <meta name="robots" content="noindex, nofollow">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
-<body>
+<body class="app">
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
@@ -32,20 +32,27 @@
   </div>
 </header>
 <main id="main">
-<section class="hero">
+<section class="hero map-hero">
   <div class="wrap">
     <p class="kicker" id="map-kicker">Your map</p>
     <h1 id="map-title">Your Early Notice map</h1>
     <p class="lede" id="map-sub">Opening your map.</p>
+    <div class="map-app">
     <div id="map-status" class="callout" role="status" hidden></div>
+    <ul class="map-stats" id="map-stats" aria-label="The numbers that matter"></ul>
     <div class="map-layout">
-      <div id="map" data-mode="member" aria-label="Map of business fit-outs"></div>
+      <div class="map-stage">
+        <div id="map" data-mode="member" aria-label="Map of business fit-outs"></div>
+        <p class="map-hint muted small" id="map-hint" hidden>Tap the map to move it. Pinch to zoom.</p>
+        <p class="map-legend muted small" id="map-legend"></p>
+      </div>
       <div class="map-side">
         <p class="map-summary" id="map-summary"></p>
         <div class="map-filters" id="map-filters" role="group" aria-label="Business types"></div>
         <ol class="map-list" id="map-list"></ol>
         <p class="map-locked" id="map-locked" hidden></p>
       </div>
+    </div>
     </div>
     <div class="map-offer" id="map-offer" hidden></div>
     <p class="muted small" id="map-pin-note" style="margin-top:1.5rem" hidden>Is the pin not quite on your building?

@@ -114,15 +114,51 @@ footer p { margin-bottom: 0.4rem; }
 @media (max-width: 40rem) {
   section { padding: 3rem 0; }
   .hero { padding: 3rem 0; }
-  .top nav { margin-left: 0; width: 100%; }
+  .top nav { margin-left: 0; width: 100%; gap: 0.1rem 1rem; }
+  .top .wrap { padding-top: 0.6rem; padding-bottom: 0.6rem; gap: 0.3rem 1rem; }
+  .top nav a { padding: 0.3rem 0; font-size: 0.97rem; }
   .price { padding: 1.5rem; }
 }
 
 /* map tool */
-.map-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(17rem, 1fr); gap: 1.25rem; margin-top: 1.5rem; align-items: start; }
-#map { height: 36rem; border: 1px solid var(--rule); border-radius: 0.5rem; background: var(--wash); z-index: 0; }
-.map-side { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1.1rem; max-height: 36rem; overflow-y: auto; }
-.map-summary { font: 600 0.95rem/1.5 var(--mono); margin: 0 0 0.9rem; }
+/* A map page is laid out like an app: a slim header, a short title, then the map filling the
+   screen, whatever the screen is. The site's other links stay in the footer. */
+.app .top .wrap { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.app .top nav { width: auto; margin-left: auto; }
+.app .top nav a:not(.btn) { display: none; }
+.map-hero { padding: 1.1rem 0 3rem; }
+.map-hero .wrap { max-width: 110rem; }
+.map-hero .kicker { margin-bottom: 0.3rem; }
+.map-hero h1 { font-size: clamp(1.35rem, 2.3vw, 2rem); line-height: 1.2; }
+.map-hero #map-sub { font-size: 1.02rem; margin-top: 0.4rem; max-width: 62rem; }
+.map-app { display: flex; flex-direction: column; }
+.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(19rem, 26rem); gap: 1rem; margin-top: 0.9rem; align-items: stretch; }
+.map-stage { min-width: 0; }
+#map { height: 70vh; height: max(24rem, calc(100dvh - 12.5rem)); border: 1px solid var(--rule); border-radius: 0.5rem; background: var(--wash); z-index: 0; }
+.map-app.has-form #map { height: 62vh; height: max(22rem, calc(100dvh - 20rem)); }
+.map-side { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 1.1rem; overflow-y: auto;
+  max-height: 70vh; max-height: max(24rem, calc(100dvh - 12.5rem)); }
+.map-app.has-form .map-side { max-height: 62vh; max-height: max(22rem, calc(100dvh - 20rem)); }
+.map-hint { margin: 0.45rem 0 0; }
+.map-legend { margin: 0.45rem 0 0; }
+.map-stats { list-style: none; margin: 0.9rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.6rem; }
+.map-stats li { background: var(--card); border: 1px solid var(--rule); border-radius: 0.5rem; padding: 0.6rem 0.8rem; min-width: 0; }
+.map-stats b { display: block; font: 700 clamp(1.25rem, 2.2vw, 1.8rem)/1.15 var(--serif); }
+.map-stats span { display: block; color: var(--muted); font-size: 0.86rem; line-height: 1.3; }
+.sorts { display: inline-flex; flex-wrap: wrap; gap: 0.35rem; }
+.sort { font: inherit; font-size: 0.85rem; padding: 0.3rem 0.65rem; min-height: 2.1rem; border: 1px solid var(--rule); border-radius: 0.35rem;
+  background: var(--paper); color: var(--ink); cursor: pointer; }
+.sort[aria-pressed="true"] { border-color: var(--ink); font-weight: 700; }
+.fresh { margin-left: 0.5rem; padding: 0.05rem 0.4rem; border-radius: 0.25rem; background: var(--accent); color: var(--accent-ink);
+  font: 700 0.72rem/1.4 var(--mono); text-transform: uppercase; }
+.shop-label { background: #16181d; color: #ffffff; border: 0; border-radius: 0.3rem; padding: 0.15rem 0.5rem; font: 700 0.82rem/1.3 var(--sans);
+  box-shadow: 0 1px 4px rgba(0,0,0,.35); }
+.shop-label::before { display: none; }
+.leaflet-popup-content .go { margin-top: 0.5rem; display: flex; gap: 1.1rem; }
+.leaflet-popup-content .go a { font-weight: 700; }
+.map-about { margin-top: 1.75rem; }
+.map-summary { font: 600 0.95rem/1.5 var(--mono); margin: 0 0 0.9rem; display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: space-between; gap: 0.5rem 1rem; }
 .map-summary b { font-size: 1.05rem; }
 .map-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
 .chip { font: inherit; font-size: 0.92rem; background: var(--paper); color: var(--ink); border: 2px solid var(--rule); border-radius: 999px;
@@ -157,9 +193,21 @@ footer p { margin-bottom: 0.4rem; }
 .leaflet-popup-content .meta { color: #555d6b; font-size: 0.9rem; }
 .ring-label { background: transparent; border: 0; box-shadow: none; font: 700 0.78rem/1 var(--mono); color: #16181d; text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
 @media (max-width: 52rem) {
-  .map-layout { grid-template-columns: 1fr; }
-  #map { height: 26rem; }
-  .map-side { max-height: none; }
+  /* On a phone the map comes first and takes most of the screen; everything else follows below it. */
+  .map-hero { padding-top: 0.8rem; }
+  .map-layout { display: contents; }
+  .map-stage { order: 1; margin-top: 0.7rem; }
+  #map, .map-app.has-form #map { height: 58vh; height: 58dvh; min-height: 18rem; }
+  .map-stats { order: 2; gap: 0.4rem; margin-top: 0.7rem; }
+  .map-stats li { padding: 0.45rem 0.5rem; }
+  .map-stats b { font-size: 1.15rem; }
+  .map-stats span { font-size: 0.74rem; }
+  .map-form { order: 3; margin-top: 1.1rem; }
+  .map-form-note { order: 4; }
+  .map-form-result { order: 5; }
+  .map-side, .map-app.has-form .map-side { order: 6; max-height: none; margin-top: 1rem; }
+  .chip { font-size: 0.86rem; padding: 0.3rem 0.65rem; min-height: 2.25rem; }
+  .map-filters { gap: 0.4rem; }
 }
 
 /* admin dashboard */

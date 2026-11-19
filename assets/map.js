@@ -10,7 +10,7 @@
               personal: "A fitness or personal care business", hotel: "A hotel", other: "A business" };
   var ORDER = ["retail", "food", "medical", "personal", "hotel", "office", "other"];
 
-  var liveMap = null;
+  var liveMap = null, touchMoves = false;
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
     var node = document.createElement(tag);
@@ -215,48 +215,63 @@
     report();
   }
 
+  function money(n) {
+    if (n >= 1e6) return "$" + (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, "") + "M";
+    if (n >= 1e3) return "$" + Math.round(n / 1e3) + "K";
+    return "$" + Math.round(n);
+  }
+  // A bigger job gets a bigger dot.
+  function radiusOf(p) {
+    var v = p.value || 0;
+    return v >= 500000 ? 13.5 : v >= 100000 ? 10.5 : v >= 25000 ? 8 : 6;
+  }
+  function things(data, n) {
+    var words = (data.audience && data.audience.things) || "business fit-outs";
+    return n === 1 ? words.replace(/s$/, "") : words;
+  }
+
   function headings(data, points) {
     var shop = data.shop, name = data.name || (shop && shop.name) || "";
-    if (data.mode === "member") {
-      setText("map-title", "Business fit-outs in " + data.city + (data.audience ? " for " + data.audience.label : ""));
-      setText("map-sub", points.length + " records from the last 30 days, updated " + data.built + "." +
-        (shop ? " Sorted by distance from " + shop.name + "." : ""));
-      document.title = data.city + " fit-outs | Early Notice";
-    } else if (data.mode === "personal") {
-      setText("map-kicker", "Preview" + (name ? " for " + name : ""));
-      setText("map-title", shop ? "Business fit-outs around " + name : "Business fit-outs in " + data.city);
-      var rings = data.rings_km || [], far = rings[rings.length - 1];
-      // The same two numbers their email states: fit-outs of the kinds they sell to, and how many are near.
-      var mine = (data.audience && data.audience.focus) || [];
-      var ofMine = function (p) { return mine.indexOf(p.tag) !== -1; };
-      var close = shop && far ? points.filter(function (p) { return ofMine(p) && p.km <= far; }).length : 0;
-      var count = data.focus_total !== undefined ? data.focus_total : points.filter(ofMine).length;
-      setText("map-sub", count + " fit-outs of the kinds " + (data.audience ? data.audience.label : "you") + " sell to were approved in " +
-        data.city + " in the last 30 days" + (close ? ", " + close + " of them within " + far + " km of you" : "") + ". " +
-        "This preview shows " + data.records.length + " in full. The rest are rings placed near the real spot.");
-      document.title = (name ? name + ": " : "") + data.city + " fit-outs preview | Early Notice";
-      var offer = $("map-offer");
-      if (offer && data.offer) {
-        offer.hidden = false;
-        offer.appendChild(el("h2", "", "Want every address on this map?"));
-        offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map, updated every weekday, and the list every Monday, free for " +
-          data.offer.weeks + " weeks, with nothing to sign up for. This same link becomes your full map." +
-          (data.offer.price ? " After that it is " + data.offer.price + " a month, and that price stays for as long as you do." : "") +
-          (data.offer.seats && data.audience ? " We take at most " + data.offer.seats + " " + data.audience.label + " in " + data.city + "." : "")));
-        var go = el("a", "btn", "Start my " + data.offer.weeks + " free weeks");
-        go.href = "mailto:" + data.offer.email + "?subject=" + encodeURIComponent("Start my " + data.offer.weeks + " free weeks" + (name ? ": " + name : "")) +
-          "&body=" + encodeURIComponent("Please start my " + data.offer.weeks + " free weeks of the " + data.city + " list and map." + (name ? "\n\n" + name : ""));
-        offer.appendChild(go);
-      }
+    var rings = data.rings_km || [], far = rings[rings.length - 1];
+    // The same two numbers their email states: fit-outs of the kinds they sell to, and how many are near.
+    var mine = (data.audience && data.audience.focus) || ORDER;
+    var own = points.filter(function (p) { return mine.indexOf(p.tag) !== -1; });
+    var close = shop && far ? own.filter(function (p) { return p.km <= far; }).length : 0;
+    var count = data.focus_total !== undefined ? data.focus_total : own.length;
+    var nearest = shop && own.length ? Math.min.apply(null, own.map(function (p) { return p.km; })) : null;
+    if (data.mode === "preview") return;    // the public page has its own heading
+    var who = data.mode === "personal" ? name : "you";
+    setText("map-kicker", data.mode === "personal" ? "Preview" + (name ? " for " + name : "") : (name || "Your map"));
+    if (close) {
+      setText("map-title", close + " " + things(data, close) + " within " + far + " km of " + (who || "you"));
+      setText("map-sub", count + " were approved across " + data.city + " in the last 30 days. Updated " + data.built + ".");
+    } else {
+      setText("map-title", count + " " + things(data, count) + " in " + data.city + " in the last 30 days");
+      setText("map-sub", (nearest !== null ? "The nearest is " + nearest.toFixed(1) + " km from " + (who || "you") + ". " : "") + "Updated " + data.built + ".");
+    }
+    document.title = (name ? name + ": " : "") + data.city + " fit-outs | Early Notice";
+    var offer = $("map-offer");
+    if (data.mode === "personal" && offer && data.offer && !offer.children.length) {
+      offer.hidden = false;
+      offer.appendChild(el("h2", "", "Want every address on this map?"));
+      offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map, updated every weekday, and the list every Monday, free for " +
+        data.offer.weeks + " weeks, with nothing to sign up for. This same link becomes your full map." +
+        (data.offer.price ? " After that it is " + data.offer.price + " a month, and that price stays for as long as you do." : "") +
+        (data.offer.seats && data.audience ? " We take at most " + data.offer.seats + " " + data.audience.label + " in " + data.city + "." : "")));
+      var go = el("a", "btn", "Start my " + data.offer.weeks + " free weeks");
+      go.href = "mailto:" + data.offer.email + "?subject=" + encodeURIComponent("Start my " + data.offer.weeks + " free weeks" + (name ? ": " + name : "")) +
+        "&body=" + encodeURIComponent("Please start my " + data.offer.weeks + " free weeks of the " + data.city + " list and map." + (name ? "\n\n" + name : ""));
+      offer.appendChild(go);
     }
     var pinNote = $("map-pin-note");
-    if (pinNote) pinNote.hidden = !(shop && data.mode !== "preview");
+    if (pinNote) pinNote.hidden = !shop;
   }
 
   function render(data) {
     data.mode = data.mode || "member";
     var shop = data.shop, focus = (data.audience && data.audience.focus) || ORDER;
     var isPreview = data.mode !== "member";
+    var rings = data.rings_km || [], near = rings[0], far = rings[rings.length - 1];
     var points = [];
     (data.hidden || []).forEach(function (h) { h.full = false; points.push(h); });
     data.records.forEach(function (r) { r.full = true; points.push(r); });
@@ -267,16 +282,26 @@
     var present = ORDER.filter(function (tag) { return points.some(function (p) { return p.tag === tag; }); });
     var active = present.filter(function (tag) { return focus.indexOf(tag) !== -1; });
     if (!active.length) active = present.slice();
-    var state = { active: active };
+    var state = { active: active, sort: shop ? "near" : "new" };
     headings(data, points);
 
     // ---- the map
     var map = null, markers = {};
     if (liveMap) { liveMap.remove(); liveMap = null; }   // drawing again, for a new pin or trade
     if (window.L) {
-      map = liveMap = L.map("map", { scrollWheelZoom: false });
+      // On a phone, one finger scrolls the page, even over the map. A tap on the map hands it the finger.
+      var needsTap = L.Browser.mobile && !touchMoves;
+      map = liveMap = L.map("map", { scrollWheelZoom: false, dragging: !needsTap });
+      var hint = $("map-hint");
+      if (hint) hint.hidden = !needsTap;
       map.on("click", function (event) {
         map.scrollWheelZoom.enable();
+        if (!map.dragging.enabled()) {
+          map.dragging.enable();
+          touchMoves = true;
+          if (hint) hint.hidden = true;
+          return;
+        }
         if (data.mode === "preview" && placePin) placePin(event.latlng.lat, event.latlng.lng, "");
       });
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -286,15 +311,13 @@
       // The map needs a starting view before anything can be drawn on it.
       var first = shop || points[0];
       map.setView(first ? [first.lat, first.lon] : [56, -106], first ? 12 : 4);
-      var bounds = [];
       if (shop) {
         L.marker([shop.lat, shop.lon], { icon: L.divIcon({ className: "", html: '<div class="shop-pin"></div>', iconSize: [24, 24], iconAnchor: [12, 12] }),
-          title: shop.name, zIndexOffset: 1000 }).addTo(map).bindPopup(el("p", "addr", shop.name));
-        (data.rings_km || []).forEach(function (ringKm) {
+          title: shop.name, zIndexOffset: 1000 }).addTo(map)
+          .bindTooltip(shop.name, { permanent: true, direction: "top", offset: [0, -12], className: "shop-label" });
+        rings.forEach(function (ringKm) {
           var ring = L.circle([shop.lat, shop.lon], { radius: ringKm * 1000, color: "#16181d", weight: 1.5, dashArray: "6 6", fill: false, interactive: false }).addTo(map);
-          var edge = ring.getBounds();
-          L.marker([edge.getNorth(), shop.lon], { interactive: false, icon: L.divIcon({ className: "ring-label", html: ringKm + " km", iconSize: [44, 14], iconAnchor: [22, 16] }) }).addTo(map);
-          bounds.push(edge.getSouthWest(), edge.getNorthEast());
+          L.marker([ring.getBounds().getNorth(), shop.lon], { interactive: false, icon: L.divIcon({ className: "ring-label", html: ringKm + " km", iconSize: [44, 14], iconAnchor: [22, 16] }) }).addTo(map);
         });
       }
       points.forEach(function (p) {
@@ -305,16 +328,32 @@
           if (p.note) body.appendChild(el("p", "meta", p.note));
           body.appendChild(el("p", "meta", "Approved " + niceDate(p.date) + (p.area ? " · " + p.area : "") +
             (p.km !== null ? " · " + p.km.toFixed(1) + " km away" : "")));
-          markers[p.index] = L.circleMarker([p.lat, p.lon], { radius: 8, color: "#ffffff", weight: 2, fillColor: color, fillOpacity: 0.95, bubblingMouseEvents: false });
+          // One tap to go there, or to see the storefront before going.
+          var links = el("p", "go");
+          var drive = el("a", "", "Directions");
+          drive.href = "https://www.google.com/maps/dir/?api=1&destination=" + p.lat + "," + p.lon + (shop ? "&origin=" + shop.lat + "," + shop.lon : "");
+          var look = el("a", "", "Street view");
+          look.href = "https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=" + p.lat + "," + p.lon;
+          [drive, look].forEach(function (a) { a.target = "_blank"; a.rel = "noopener noreferrer"; links.appendChild(a); });
+          body.appendChild(links);
+          markers[p.index] = L.circleMarker([p.lat, p.lon], { radius: radiusOf(p), color: p.new ? "#16181d" : "#ffffff", weight: p.new ? 3 : 2,
+            fillColor: color, fillOpacity: 0.95, bubblingMouseEvents: false });
         } else {
           body.appendChild(el("p", "addr", (ONE[p.tag] || ONE.other) + " being fitted out near here"));
-          body.appendChild(el("p", "meta", "Placed roughly, not on the exact spot. Subscribers see the address, the cost and who filed it."));
-          markers[p.index] = L.circleMarker([p.lat, p.lon], { radius: 6, color: color, weight: 2.5, fillColor: "#ffffff", fillOpacity: 0.85, bubblingMouseEvents: false });
+          var facts = [];
+          if (p.value) facts.push("Estimated at about " + money(p.value) + ".");
+          if (p.new) facts.push("Approved in the last 7 days.");
+          if (p.km !== null) facts.push("About " + p.km.toFixed(1) + " km from you.");
+          if (facts.length) body.appendChild(el("p", "", facts.join(" ")));
+          body.appendChild(el("p", "meta", "Placed roughly, not on the exact spot. Subscribers see the address and who filed it."));
+          markers[p.index] = L.circleMarker([p.lat, p.lon], { radius: radiusOf(p), color: color, weight: p.new ? 4 : 2.5,
+            fillColor: "#ffffff", fillOpacity: 0.85, bubblingMouseEvents: false });
         }
         markers[p.index].bindPopup(body);
-        if (!shop) bounds.push([p.lat, p.lon]);
       });
-      if (bounds.length) map.fitBounds(bounds, { padding: [24, 24] });
+      var legend = $("map-legend");
+      if (legend) legend.textContent = "A bigger dot is a bigger job. A heavy outline was approved in the last 7 days." +
+        (isPreview ? " A hollow dot is placed roughly: its address is for subscribers." : "");
     } else {
       $("map").hidden = true;
       say("The map itself could not load, so the records are shown as a list.");
@@ -324,27 +363,84 @@
     function shown() {
       return points.filter(function (p) { return state.active.indexOf(p.tag) !== -1; });
     }
-    function draw() {
+    // Frame what matters: the business and the fit-outs nearest to it, never an empty circle.
+    function frame(rows) {
+      if (!map) return;
+      var spots = [];
+      if (shop) {
+        spots.push([shop.lat, shop.lon]);
+        rows.slice().sort(function (a, b) { return a.km - b.km; }).slice(0, 10).forEach(function (p) { spots.push([p.lat, p.lon]); });
+        var reach = rows.filter(function (p) { return p.km <= far; }).length >= 3 ? far : null;
+        if (reach) { var edge = L.latLng(shop.lat, shop.lon).toBounds(reach * 2000); spots.push(edge.getSouthWest(), edge.getNorthEast()); }
+      } else {
+        rows.forEach(function (p) { spots.push([p.lat, p.lon]); });
+      }
+      if (spots.length > 1) map.fitBounds(spots, { padding: [28, 28], maxZoom: 15 });
+    }
+    function tile(root, big, small) {
+      var li = el("li");
+      li.appendChild(el("b", "", String(big)));
+      li.appendChild(el("span", "", small));
+      root.appendChild(li);
+    }
+    function draw(reframe) {
       var rows = shown();
-      var full = rows.filter(function (p) { return p.full; })
-        .sort(function (a, b) { return shop ? a.km - b.km : (a.date < b.date ? 1 : -1); });
+      var order = {
+        near: function (a, b) { return a.km - b.km; },
+        "new": function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; },
+        big: function (a, b) { return (b.value || 0) - (a.value || 0); }
+      }[state.sort];
+      var full = rows.filter(function (p) { return p.full; }).sort(order);
       if (map) points.forEach(function (p) {
         var on = state.active.indexOf(p.tag) !== -1;
         if (on && !map.hasLayer(markers[p.index])) markers[p.index].addTo(map);
         if (!on && map.hasLayer(markers[p.index])) map.removeLayer(markers[p.index]);
         if (on && p.full) markers[p.index].bringToFront();
       });
+      if (reframe) frame(rows);
+
+      // ---- the numbers that matter, for the types selected
+      var stats = $("map-stats");
+      if (stats) {
+        stats.replaceChildren();
+        var worth = function (list) { return list.reduce(function (sum, p) { return sum + (p.value || 0); }, 0); };
+        var fresh = rows.filter(function (p) { return p["new"]; }).length;
+        if (shop) {
+          var inFar = rows.filter(function (p) { return p.km <= far; }), inNear = rows.filter(function (p) { return p.km <= near; });
+          if (inFar.length) {
+            tile(stats, inFar.length, "within " + far + " km");
+            tile(stats, inNear.length, "within " + near + " km");
+            if (worth(inFar)) tile(stats, money(worth(inFar)), "of work within " + far + " km"); else tile(stats, fresh, "new this week");
+          } else {
+            // Nothing close by: say how far the nearest is, and widen the circle.
+            var wide = far * 2, inWide = rows.filter(function (p) { return p.km <= wide; });
+            var closest = rows.length ? Math.min.apply(null, rows.map(function (p) { return p.km; })) : null;
+            tile(stats, closest === null ? "none" : closest.toFixed(1) + " km", "to the nearest");
+            tile(stats, inWide.length, "within " + wide + " km");
+            if (worth(inWide)) tile(stats, money(worth(inWide)), "of work within " + wide + " km"); else tile(stats, fresh, "new this week");
+          }
+          tile(stats, rows.length, "across " + data.city);
+        } else {
+          tile(stats, rows.length, "in " + data.city + ", 30 days");
+          tile(stats, fresh, "new this week");
+          if (worth(rows)) tile(stats, money(worth(rows)), "of work in all");
+          var top = Math.max.apply(null, rows.map(function (p) { return p.value || 0; }).concat([0]));
+          if (top) tile(stats, money(top), "the biggest job");
+        }
+      }
 
       var summary = $("map-summary");
       summary.replaceChildren();
-      var line = el("span");
-      line.appendChild(el("b", "", String(rows.length)));
-      line.appendChild(document.createTextNode(rows.length === 1 ? " fit-out" : " fit-outs"));
-      summary.appendChild(line);
-      if (shop) (data.rings_km || []).forEach(function (ringKm) {
-        var n = rows.filter(function (p) { return p.km <= ringKm; }).length;
-        summary.appendChild(el("span", "", " · " + n + " within " + ringKm + " km"));
+      summary.appendChild(el("span", "", isPreview ? full.length + " shown in full, of " + rows.length : rows.length + (rows.length === 1 ? " record" : " records")));
+      var sorts = el("span", "sorts");
+      (shop ? [["near", "Nearest"]] : []).concat([["new", "Newest"], ["big", "Biggest"]]).forEach(function (pair) {
+        var pick = el("button", "sort", pair[1]);
+        pick.type = "button";
+        pick.setAttribute("aria-pressed", String(state.sort === pair[0]));
+        pick.onclick = function () { state.sort = pair[0]; draw(false); };
+        sorts.appendChild(pick);
       });
+      summary.appendChild(sorts);
 
       var filters = $("map-filters");
       filters.replaceChildren();
@@ -360,7 +456,7 @@
         chip.onclick = function () {
           var at = state.active.indexOf(tag);
           if (at === -1) state.active.push(tag); else state.active.splice(at, 1);
-          draw();
+          draw(true);
         };
         filters.appendChild(chip);
       });
@@ -372,7 +468,7 @@
           all.type = "button";
           all.onclick = function () {
             state.active = showingAll ? mine.slice() : present.slice();
-            draw();
+            draw(true);
           };
           filters.appendChild(all);
         }
@@ -388,7 +484,9 @@
         button.appendChild(dot);
         button.appendChild(el("span", "addr", r.address));
         button.appendChild(el("span", "what", r.what + (r.cost ? " · est. " + r.cost : "")));
-        button.appendChild(el("span", "meta", "Approved " + niceDate(r.date) + (r.km !== null ? " · " + r.km.toFixed(1) + " km" : "")));
+        var meta = el("span", "meta", "Approved " + niceDate(r.date) + (r.km !== null ? " · " + r.km.toFixed(1) + " km" : ""));
+        if (r["new"]) meta.appendChild(el("b", "fresh", "new"));
+        button.appendChild(meta);
         button.onclick = function () {
           if (!map) return;
           map.setView([r.lat, r.lon], Math.max(map.getZoom(), 15));
@@ -406,9 +504,9 @@
         var unplaced = (data.total || 0) - points.length;
         var notes = [];
         if (isPreview) {
-          var rings = points.length - data.records.length;
+          var hollow = points.length - data.records.length;
           notes.push("This preview shows " + data.records.length + " of " + points.length + " records in full." +
-            (rings > 0 ? " The " + rings + " rings are the rest, each placed within about 400 m of the real spot." : "") +
+            (hollow > 0 ? " The " + hollow + " hollow dots are the rest, each placed within about 400 m of the real spot." : "") +
             " Subscribers see every address, the cost and who filed it.");
         }
         if (unplaced > 0) notes.push(unplaced + " more " + (unplaced === 1 ? "record has" : "records have") +
@@ -417,7 +515,7 @@
         locked.textContent = notes.join(" ");
       }
     }
-    draw();
+    draw(true);
   }
 
   async function start() {
