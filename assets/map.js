@@ -95,7 +95,7 @@
       if (offer && data.offer) {
         offer.hidden = false;
         offer.appendChild(el("h2", "", "Want every address on this map?"));
-        offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map and the list every Monday, free for " +
+        offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map, updated every weekday, and the list every Monday, free for " +
           data.offer.weeks + " weeks, with nothing to sign up for. This same link becomes your full map."));
         var go = el("a", "btn", "Start my " + data.offer.weeks + " free weeks");
         go.href = "mailto:" + data.offer.email + "?subject=" + encodeURIComponent("Start my " + data.offer.weeks + " free weeks" + (name ? ": " + name : "")) +
