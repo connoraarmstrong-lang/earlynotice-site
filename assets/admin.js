@@ -73,6 +73,20 @@
       [t.cities, "cities with fresh data"], [t.records, "fit-outs in the last 30 days"]
     ]);
 
+    if (d.inbox) {
+      section(root, "Waiting for you", "Messages a person has to answer. A business that says no is marked by itself and is not listed here.");
+      if (d.inbox.waiting.length) table(root, ["When", "From", "Business", "What", "They wrote"], d.inbox.waiting.map(function (w) {
+        return [w.when, w.from, w.business, w.kind, w.said];
+      }), []);
+      else root.appendChild(el("p", "", "Nothing is waiting."));
+      section(root, "Handled without you, last 14 days", d.inbox.last_read ?
+        "The mailbox was last read on " + d.inbox.last_read.replace("T", " at ") + "." : "The mailbox has not been read yet.");
+      if (d.inbox.handled.length) table(root, ["When", "Business", "What was done"], d.inbox.handled.map(function (h) {
+        return [h.when, h.business, h.what];
+      }), []);
+      else root.appendChild(el("p", "", "Nothing yet."));
+    }
+
     section(root, "The offer", null);
     root.appendChild(el("p", "", o.price + " a month per city" + (o.yearly ? ", or " + o.yearly + " a year" : "") + ". " + o.weeks +
       " free weeks, no card. " + (o.seats ? "At most " + o.seats + " businesses per trade in each city. " : "No limit on how many businesses of one trade may subscribe. ") +
