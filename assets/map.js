@@ -118,8 +118,74 @@
   }
   function quoted(text) { return "'" + text.replace(/'/g, "''") + "'"; }
 
-  // Each city writes its address records its own way. Both answer straight to the visitor's browser.
+  // Outside the prairie cities a direction can come before the street ("West 12th Avenue") or after it
+  // ("Queen Street West"), and every city abbreviates its own way. So both sides are put into one
+  // standard spelling and compared word for word.
+  var DIRS = { N: "N", NORTH: "N", S: "S", SOUTH: "S", E: "E", EAST: "E", W: "W", WEST: "W", NE: "NE", NW: "NW", SE: "SE", SW: "SW",
+               NORTHEAST: "NE", NORTHWEST: "NW", SOUTHEAST: "SE", SOUTHWEST: "SW" };
+  var WORDS = { STREET: "ST", ST: "ST", AVENUE: "AV", AVE: "AV", AV: "AV", ROAD: "RD", RD: "RD", DRIVE: "DR", DR: "DR",
+                BOULEVARD: "BLVD", BLVD: "BLVD", BV: "BLVD", CRESCENT: "CRES", CRES: "CRES", CR: "CRES", PLACE: "PL", PL: "PL",
+                COURT: "CRT", CRT: "CRT", CT: "CRT", LANE: "LANE", LN: "LANE", TERRACE: "TER", TERR: "TER", TER: "TER",
+                HIGHWAY: "HWY", HWY: "HWY", PARKWAY: "PKWY", PKWY: "PKWY", PKY: "PKWY", SQUARE: "SQ", SQ: "SQ",
+                CIRCLE: "CIR", CIR: "CIR", CRCL: "CIR", TRAIL: "TRL", TRL: "TRL", TR: "TRL", WAY: "WAY", WY: "WAY",
+                GARDENS: "GDNS", GDNS: "GDNS", GATE: "GT", GT: "GT", DIVERSION: "DIVERS", DIVERS: "DIVERS",
+                MOUNT: "MT", MT: "MT", SAINT: "ST" };
+  var TYPES = Object.keys(WORDS).map(function (k) { return WORDS[k]; });
+  function isDir(w) { return /^(N|S|E|W|NE|NW|SE|SW)$/.test(w); }
+  // "Suite 400, 1 St. Clair Ave. East" -> { number: 1, words: ["ST", "CLAIR", "AV", "E"], plain: "1 ST CLAIR AVE EAST" }, or null.
+  function streetWords(text) {
+    var t = String(text || "").toUpperCase().replace(/,/g, " ").replace(/[.']/g, "").replace(/[^A-Z0-9 #-]/g, " ").replace(/\s+/g, " ").trim();
+    t = t.replace(/^(?:#\s*\w+|(?:BAY|UNIT|SUITE|STE)\s*#?\s*\w+)\s+/, "").replace(/^-\s*/, "").replace(/^\w{1,5}\s*-\s*(?=\d)/, "");
+    var words = t.split(" "), number = /^(\d+)[A-Z]?$/.exec(words[0] || "");
+    if (!number || words.length < 2) return null;
+    return { number: Number(number[1]), plain: number[1] + " " + words.slice(1).join(" "),
+             words: words.slice(1).map(function (w) { return DIRS[w] || WORDS[w] || w; }) };
+  }
+  function bare(words) { return words.filter(function (w) { return !isDir(w); }).join(" "); }
+  // The one street on file that is the typed one. A typed address with no direction ("1055 Georgia Street")
+  // fits only when a single street does, so West Georgia is never mistaken for East Georgia.
+  function sameStreet(wanted, onFile) {
+    var key = wanted.join(" ");
+    if (onFile[key]) return onFile[key];
+    if (bare(wanted) !== key) return null;
+    var loose = Object.keys(onFile).filter(function (k) { return bare(k.split(" ")) === key; });
+    return loose.length === 1 ? onFile[loose[0]] : null;
+  }
+  // The word of a street's name that best narrows a search: the longest one that is not a direction or a type.
+  function nameWord(words) {
+    var names = words.filter(function (w) { return !isDir(w) && TYPES.indexOf(w) === -1; });
+    return (names.length ? names : words).slice().sort(function (x, y) { return y.length - x.length; })[0];
+  }
+
+  // Each city writes its address records its own way. All of them answer straight to the visitor's browser.
   var LOOKUPS = {
+    vancouver: async function (a, typed) {
+      var s = streetWords(typed);
+      if (!s) return null;
+      var where = "civic_number='" + s.number + "' and std_street like '%" + nameWord(s.words) + "%'";
+      var rows = (await (await fetch("https://opendata.vancouver.ca/api/explore/v2.1/catalog/datasets/property-addresses/records" +
+        "?select=civic_number,std_street,geo_point_2d&limit=100&where=" + encodeURIComponent(where))).json()).results || [];
+      var onFile = {};
+      rows.forEach(function (r) {
+        var got = streetWords(r.civic_number + " " + r.std_street), p = r.geo_point_2d, key = got && got.words.join(" ");
+        if (got && got.number === s.number && p && p.lat && p.lon && !onFile[key]) onFile[key] = { lat: p.lat, lon: p.lon, label: r.civic_number + " " + r.std_street };
+      });
+      return sameStreet(s.words, onFile);
+    },
+    // Toronto's own address records cannot be asked from a browser, so Natural Resources Canada's public lookup is asked.
+    toronto: async function (a, typed) {
+      var s = streetWords(typed);
+      if (!s) return null;
+      var rows = await (await fetch("https://www.geolocator.api.geo.ca/geolocation/en/locate?q=" + encodeURIComponent(s.plain + ", Toronto, ON"))).json();
+      var onFile = {};
+      (Array.isArray(rows) ? rows : []).forEach(function (r) {
+        var title = String(r.title || ""), c = r.geometry && r.geometry.coordinates;
+        if (!/Street$/.test(String(r.type || "")) || r.qualifier !== "INTERPOLATED_POSITION" || !/Toronto/i.test(title) || !c) return;
+        var got = streetWords(title.split(",")[0]), key = got && got.words.join(" ");
+        if (got && got.number === s.number && !onFile[key]) onFile[key] = { lat: Number(c[1]), lon: Number(c[0]), label: title.split(",")[0] };
+      });
+      return sameStreet(s.words, onFile);
+    },
     calgary: async function (a) {
       if (!a.quad) throw new Error("Calgary addresses end in NE, NW, SE or SW. Add that and try again.");
       var where = "street_name = " + quoted(a.name) + " AND street_quad = " + quoted(a.quad) +
@@ -201,10 +267,11 @@
       result.hidden = false;
       if (!lookup) { result.textContent = "Click the map where your business is."; return; }
       if (!address) { result.textContent = "That does not look like a street address. Try a house number and street, such as the example, or click the map where your business is."; return; }
-      result.textContent = "Looking that up in the City of " + data.city + "'s address records.";
+      var source = data.lookup_source || ("the City of " + data.city + "'s address records");
+      result.textContent = "Looking that up in " + source + ".";
       try {
-        var found = await lookup(address);
-        if (!found) { result.textContent = "The City of " + data.city + " has no address like that. Check the number and street, or click the map where your business is."; return; }
+        var found = await lookup(address, box.value);
+        if (!found) { result.textContent = "That address was not found in " + source + ". Check the number and street, or click the map where your business is."; return; }
         typed = box.value.trim();
         placePin(found.lat, found.lon, "Your business");
       } catch (problem) {
