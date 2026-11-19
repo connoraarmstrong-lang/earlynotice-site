@@ -44,15 +44,27 @@
     return Array.prototype.map.call(new Uint8Array(buffer), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
   }
 
+  // A link ends in a short code (k7qf-2mxd-9rta, after the business's name and a dot). The code is
+  // stretched into the real key here, in the browser, by hashing it 600,000 times. Older links carry
+  // the full key instead.
+  async function keyFromLink(text) {
+    var code = /(?:^|\.)([a-z2-9]{4}-[a-z2-9]{4}-[a-z2-9]{4})$/i.exec(text);
+    if (!code) return bytesFromLink(text);
+    var enc = new TextEncoder();
+    var material = await crypto.subtle.importKey("raw", enc.encode(code[1].toUpperCase()), "PBKDF2", false, ["deriveBits"]);
+    return new Uint8Array(await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt: enc.encode("earlynotice-map-v1"), iterations: 600000, hash: "SHA-256" }, material, 256));
+  }
+
   // A private map's data is locked. The key is the part of the link after the # sign,
   // which the browser never sends anywhere.
   async function loadPrivate() {
     var key = location.hash.slice(1);
     if (!key) throw new Error("This link is incomplete. Open the full link from your Early Notice email.");
-    var raw;
-    try { raw = bytesFromLink(key); } catch (e) { raw = new Uint8Array(0); }
-    if (raw.length !== 32) throw new Error("This link is not valid. Open the full link from your Early Notice email.");
     if (!window.crypto || !crypto.subtle) throw new Error("This browser cannot open a private map. Try a current version of Chrome, Edge, Safari or Firefox.");
+    var raw;
+    try { raw = await keyFromLink(key); } catch (e) { raw = new Uint8Array(0); }
+    if (raw.length !== 32) throw new Error("This link is not valid. Open the full link from your Early Notice email.");
     var id = hex(await crypto.subtle.digest("SHA-256", raw)).slice(0, 20);
     var response = await fetch("/m/" + id + ".bin", { cache: "no-store" });
     if (!response.ok) throw new Error("This map link is no longer active. Reply to any Early Notice email and we will set it up again.");
