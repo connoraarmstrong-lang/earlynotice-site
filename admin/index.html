@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="/assets/site.css">
 <meta name="robots" content="noindex, nofollow">
 </head>
-<body>
+<body class="app">
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="wrap">
@@ -33,9 +33,22 @@
 <main id="main">
 <section class="hero admin">
   <div class="wrap">
-    <p class="kicker">Admin</p>
-    <h1>Early Notice at a glance</h1>
-    <p class="lede" id="admin-sub">Opening the dashboard.</p>
+    <div class="admin-head">
+      <div>
+        <p class="kicker">Admin</p>
+        <h1>Early Notice at a glance</h1>
+      </div>
+      <button type="button" class="btn quiet" id="admin-out" hidden>Sign out</button>
+    </div>
+    <p class="muted" id="admin-sub">Opening the dashboard.</p>
+    <form class="admin-signin" id="admin-signin" hidden>
+      <input type="text" name="username" value="admin" autocomplete="username" hidden>
+      <label for="admin-pass">Password</label>
+      <input id="admin-pass" name="password" type="password" autocomplete="current-password" required>
+      <label class="admin-keep"><input type="checkbox" id="admin-keep"> Stay signed in on this phone or computer</label>
+      <button class="btn" type="submit">Sign in</button>
+      <p class="muted small">Your private admin link also opens this page, with no password.</p>
+    </form>
     <div id="admin-root"></div>
   </div>
 </section>
