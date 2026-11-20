@@ -264,7 +264,8 @@
       }));
       else para(p, "None yet. The first one appears here the day a business says yes.");
       heading(p, "The offer", null);
-      para(p, o.price + " a month per city" + (o.yearly ? ", or " + o.yearly + " a year" : "") + ". " + o.weeks + " free weeks, no card. " +
+      para(p, o.price + " a month per city" + (o.yearly ? ", or " + o.yearly + " a year" : "") + ". " + o.weeks + " free weeks, " +
+        (o.card ? "started on the payment page with a card, cancel any time. " : "no card, started by email. ") +
         (o.seats ? "At most " + o.seats + " businesses per trade in each city." : "No limit on how many businesses of one trade may subscribe."));
       if (o.links && o.links.length) links(p, "Where customers pay: ", o.links, true);
       links(p, "See it as they do: ", [["The public site", "/"], ["The map preview", "/map/"], ["Pricing", "/#pricing"]].concat(

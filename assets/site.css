@@ -95,6 +95,13 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-
 .ticks { list-style: none; padding: 0; margin: 1.25rem 0 1.5rem; display: grid; gap: 0.6rem; }
 .ticks li { padding-left: 1.7rem; position: relative; }
 .ticks li::before { content: "\2713"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
+/* sign-up steps: one large button per choice */
+.picks { list-style: none; padding: 0; margin: 1.75rem 0 2rem; display: grid; gap: 0.7rem; }
+.pick { display: block; padding: 1rem 1.2rem; border: 2px solid var(--ink); border-radius: 0.5rem; background: var(--card);
+  color: var(--ink); text-decoration: none; }
+.pick:hover { background: var(--wash); }
+.pick b { display: block; font-size: 1.15rem; }
+.pick span { color: var(--muted); font-size: 0.95rem; }
 
 /* prose pages and faq */
 .prose h2 { margin-top: 2.5rem; font-size: 1.5rem; }

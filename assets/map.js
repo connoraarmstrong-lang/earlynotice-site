@@ -74,7 +74,9 @@
     var blob = new Uint8Array(await response.arrayBuffer());
     var cryptoKey = await crypto.subtle.importKey("raw", raw, { name: "AES-GCM" }, false, ["decrypt"]);
     var plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: blob.slice(0, 12) }, cryptoKey, blob.slice(12));
-    return JSON.parse(new TextDecoder().decode(plain));
+    var opened = JSON.parse(new TextDecoder().decode(plain));
+    opened.link_id = id;      // the map's file name, which is not the key: it tells a sign-up whose map this is
+    return opened;
   }
 
   // The public preview carries the sample records that are already public, and rough dots for the rest.
@@ -238,7 +240,8 @@
     function report() {
       var far = (data.rings_km || [])[(data.rings_km || []).length - 1], audience = chosen(), mine = audience !== data.everyone;
       var cta = document.querySelector(".map-cta a");
-      if (cta && data.offer) cta.href = "mailto:" + data.offer.email + "?subject=" +
+      // Where signing up is a checkout, the button already points at the sign-up steps for this city.
+      if (cta && data.offer && !data.offer.start) cta.href = "mailto:" + data.offer.email + "?subject=" +
         encodeURIComponent("Start my " + data.offer.weeks + " free weeks (" + data.city + ")") + "&body=" +
         encodeURIComponent("City I want: " + data.city + "\nMy business:\n" + (mine ? "What I sell: " + audience.label + "\n" : "") +
           (typed ? "My address: " + typed + "\n" : ""));
@@ -324,13 +327,22 @@
     if (data.mode === "personal" && offer && data.offer && !offer.children.length) {
       offer.hidden = false;
       offer.appendChild(el("h2", "", "Want every address on this map?"));
-      offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map, updated every weekday, and the list every Monday, free for " +
-        data.offer.weeks + " weeks, with nothing to sign up for. This same link becomes your full map." +
-        (data.offer.price ? " After that it is " + data.offer.price + " a month, and that price stays for as long as you do." : "") +
-        (data.offer.seats && data.audience ? " We take at most " + data.offer.seats + " " + data.audience.label + " in " + data.city + "." : "")));
+      var after = (data.offer.price ? " After that it is " + data.offer.price + " a month, and that price stays for as long as you do." : "") +
+        (data.offer.seats && data.audience ? " We take at most " + data.offer.seats + " " + data.audience.label + " in " + data.city + "." : "");
       var go = el("a", "btn", "Start my " + data.offer.weeks + " free weeks");
-      go.href = "mailto:" + data.offer.email + "?subject=" + encodeURIComponent("Start my " + data.offer.weeks + " free weeks" + (name ? ": " + name : "")) +
-        "&body=" + encodeURIComponent("Please start my " + data.offer.weeks + " free weeks of the " + data.city + " list and map." + (name ? "\n\n" + name : ""));
+      if (data.offer.checkout) {
+        // Signing up is a checkout. The reference says whose map this is, so this same link becomes their full map.
+        offer.appendChild(el("p", "", "You get the full map, updated every weekday, and the list every Monday, free for " + data.offer.weeks +
+          " weeks. The button opens our payment page, run by Stripe. It asks for a card, which is not charged until the free weeks end, " +
+          "and you can cancel any time. This same link becomes your full map." + after));
+        go.href = data.offer.checkout + "?client_reference_id=map__" + data.link_id;
+        go.rel = "noopener";
+      } else {
+        offer.appendChild(el("p", "", "Reply to the email we sent you, or use this button. You get the full map, updated every weekday, and the list every Monday, free for " +
+          data.offer.weeks + " weeks, with nothing to sign up for. This same link becomes your full map." + after));
+        go.href = "mailto:" + data.offer.email + "?subject=" + encodeURIComponent("Start my " + data.offer.weeks + " free weeks" + (name ? ": " + name : "")) +
+          "&body=" + encodeURIComponent("Please start my " + data.offer.weeks + " free weeks of the " + data.city + " list and map." + (name ? "\n\n" + name : ""));
+      }
       offer.appendChild(go);
     }
     var pinNote = $("map-pin-note");
