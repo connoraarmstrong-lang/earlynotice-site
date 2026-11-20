@@ -181,8 +181,11 @@
         [t.bounced, "could not be delivered"], [t.said_no, "said no or unsubscribed"],
         [t.may_email, "businesses we may email"], [t.waiting, "still waiting their turn"]
       ]);
-      para(p, "The daily number now: " + (d.pace === undefined ? o.overall_cap : d.pace) + " first emails a day across every city. At most " +
-        o.daily_cap + " to one city, never more than " + o.overall_cap + " a day from one mailbox, weekdays only, one email per business, ever.");
+      var boxes = d.mailboxes;
+      para(p, "The daily number now: " + (d.pace === undefined ? o.overall_cap : d.pace) + " first emails a day from each sending mailbox that is ready" +
+        (boxes ? " (" + boxes.ready + " of " + boxes.on_file + " ready today)" : "") + ". At most " + o.daily_cap +
+        " to one city, never more than " + o.overall_cap + " a day from one mailbox, weekdays only, one email per business, ever.");
+      if (boxes && boxes.notes.length) cards(p, boxes.notes.map(function (note) { return { tag: "not used today", text: note }; }));
       heading(p, "First emails sent, last " + d.sent_by_day.length + " days", null);
       var most = Math.max.apply(null, d.sent_by_day.map(function (x) { return x.n; }).concat([1]));
       var bars = el("div", "bars");
