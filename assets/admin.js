@@ -288,7 +288,7 @@
                  sub: "From " + line.seen + (line.decide_by ? " · decide by " + line.decide_by : "") };
       }));
       para(p, "A yearly payment counts as a twelfth each month. The services bill in US dollars, shown here in Canadian dollars at " + m.rate.rate +
-        " (" + m.rate.source + ", " + m.rate.day + "), which assumes your own prices are charged in Canadian dollars. Income is what is recorded here " +
+        " (" + m.rate.source + ", " + m.rate.day + "). Your own price is charged in Canadian dollars, as your payment page shows. Income is what is recorded here " +
         "when a customer pays. Your Stripe balance is not read.", "muted small");
     }
 
